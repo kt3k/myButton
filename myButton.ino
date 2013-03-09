@@ -16,8 +16,8 @@ private:
 public:
   Switch(int);
   boolean turnedOn(void);
-  void shiftValues(int);
-  boolean buttonIsHigh(void);
+  void shiftValues(void);
+  void readVal(void);
   boolean buttonTurnedHigh(void);
 };
 
@@ -50,29 +50,31 @@ Switch::Switch(int button) {
 }
 
 boolean Switch::turnedOn() {
-  boolean flag = false;
+  this->readVal();
   if (this->buttonTurnedHigh()) {
     delay(20);
-    if (this->buttonIsHigh()) {
-      this->shiftValues(HIGH);
+    this->readVal();
+    if (this->val == HIGH) {
+      this->shiftValues();
       return true;
     }
   }
 
-  this->shiftValues(LOW);
+  this->shiftValues();
   return false;
 }
 
-void Switch::shiftValues(int val) {
+void Switch::shiftValues() {
   this->valPrevPrevPrev = this->valPrevPrev;
   this->valPrevPrev = this->valPrev;
-  this->valPrev = val;
+  this->valPrev = this->val;
 }
 
-boolean Switch::buttonIsHigh() {
-  return digitalRead(this->button);
+void Switch::readVal() {
+  this->val = digitalRead(this->button);
+  return;
 }
 
 boolean Switch::buttonTurnedHigh() {
-  return this->buttonIsHigh() && this->valPrev == LOW && this->valPrevPrev == LOW && this->valPrevPrevPrev == LOW;
+  return this->val == HIGH && this->valPrev == LOW && this->valPrevPrev == LOW && this->valPrevPrevPrev == LOW;
 }
